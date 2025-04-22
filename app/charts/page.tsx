@@ -1,6 +1,8 @@
 import { getChartData } from "@/lib/db/queries";
 import { Component } from "./charts";
 
+export const dynamic = 'auto'
+
 export default async function ChartsPage() {
     const chartData = await getChartData()
     return (
