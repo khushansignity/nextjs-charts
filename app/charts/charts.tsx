@@ -53,6 +53,7 @@ import { toast } from "sonner";
 import { addNewEntry } from "./actions";
 import { Transaction } from "@/lib/db/schema";
 import { useRouter } from "next/navigation";
+import { Portal } from "@radix-ui/react-popover";
 
 const chartConfig = {
   visitors: {
@@ -73,7 +74,7 @@ interface ComponentProps {
 }
 
 export function Component({ chartData }: ComponentProps) {
-  console.log("chartData", chartData)
+  console.log("chartData", chartData);
   const router = useRouter();
   const [timeRange, setTimeRange] = React.useState("90d");
   const [open, setOpen] = React.useState(false);
@@ -175,18 +176,23 @@ export function Component({ chartData }: ComponentProps) {
                               )}
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0 z-[1000]" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
+                          <Portal>
+                            <PopoverContent
+                              className="w-auto p-0 z-[1000]"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() ||
+                                  date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Portal>
                         </Popover>
                       </FormItem>
                     )}
