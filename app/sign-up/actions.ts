@@ -11,7 +11,7 @@ import { z } from 'zod';
 const signUpSchema = z.object({
     email: z.string().email(),
     password: z.string().min(8),
-  });
+});
 
 export const signUp = validatedAction(signUpSchema, async (data) => {
     const { email, password, } = data;
@@ -25,8 +25,6 @@ export const signUp = validatedAction(signUpSchema, async (data) => {
         .from(auth_users)
         .where(eq(auth_users.email, email))
         .limit(1);
-
-    console.log("existingUser", existingUser)
 
     if (existingUser.length > 0) {
         return {

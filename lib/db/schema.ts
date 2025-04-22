@@ -15,7 +15,7 @@ export const balances = pgTable('balances', {
     id: serial('id').primaryKey(),
     date: date('date').notNull(),
     mainamount: numeric('mainamount', { precision: 12, scale: 2 }).notNull(),
-    stcamount: numeric('stcamount', { precision: 12, scale: 2 }).notNull(),
+    stcamount: numeric('stcamount', { precision: 12, scale: 2 }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
