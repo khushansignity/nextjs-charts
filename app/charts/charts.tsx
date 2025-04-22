@@ -73,6 +73,7 @@ interface ComponentProps {
 }
 
 export function Component({ chartData }: ComponentProps) {
+  console.log("chartData", chartData)
   const router = useRouter();
   const [timeRange, setTimeRange] = React.useState("90d");
   const [open, setOpen] = React.useState(false);
