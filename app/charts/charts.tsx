@@ -36,14 +36,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+// import { cn } from "@/lib/utils";
+// import { CalendarIcon } from "lucide-react";
+// import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -53,7 +53,6 @@ import { toast } from "sonner";
 import { addNewEntry } from "./actions";
 import { Transaction } from "@/lib/db/schema";
 import { useRouter } from "next/navigation";
-import { Portal } from "@radix-ui/react-popover";
 
 const chartConfig = {
   visitors: {
@@ -80,7 +79,10 @@ export function Component({ chartData }: ComponentProps) {
   const [open, setOpen] = React.useState(false);
 
   const FormSchema = z.object({
-    date: z.date({
+    // date: z.date({
+    //   required_error: "A date of birth is required.",
+    // }),
+    date: z.coerce.date({
       required_error: "A date of birth is required.",
     }),
     mainamount: z.coerce
@@ -99,6 +101,9 @@ export function Component({ chartData }: ComponentProps) {
       stcamount: 0,
     },
   });
+
+  console.log("data", form.watch());
+  console.log("errors", form.formState.errors);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const payload = {
@@ -159,7 +164,7 @@ export function Component({ chartData }: ComponentProps) {
                         <Label htmlFor="date" className="text-right">
                           Date
                         </Label>
-                        <Popover>
+                        {/* <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               variant={"outline"}
@@ -176,24 +181,31 @@ export function Component({ chartData }: ComponentProps) {
                               )}
                             </Button>
                           </PopoverTrigger>
-                          <Portal>
-                            <PopoverContent
-                              className="w-auto p-0 z-[1000]"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Portal>
-                        </Popover>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover> */}
+                        <Input
+                          id="date"
+                          name="date"
+                          value={
+                            field.value ? format(field.value, "yyyy-MM-dd") : ""
+                          }
+                          onChange={(e) =>
+                            field.onChange(new Date(e.target.value))
+                          }
+                          type="date"
+                          className="col-span-3"
+                        />
                       </FormItem>
                     )}
                   />
