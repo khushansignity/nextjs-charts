@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,25 +11,30 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "./actions";
+import { signIn, signUp } from "./actions";
 import { useActionState } from "react";
 import { ActionState } from "@/lib/auth/middleware";
+import Link from "next/link";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+type LoginFormProps = React.ComponentPropsWithoutRef<"div"> & {
+  mode?: "signin" | "signup";
+};
+
+export function LoginForm({ className, ...props }: LoginFormProps) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
-    signUp,
+    props.mode === "signin" ? signIn : signUp,
     { error: "" }
   );
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">
+            {props.mode === "signin" ? "Login" : "Signup"}
+          </CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to{" "}
+            {props.mode === "signin" ? "login to" : "create"} your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,17 +73,22 @@ export function LoginForm({
                 <div className="text-red-500 text-sm">{state.error}</div>
               )}
               <Button type="submit" className="w-full" disabled={pending}>
-                Login
+                {props.mode === "signin" ? "Login" : "Signup"}
               </Button>
-              <Button variant="outline" className="w-full">
+              {/* <Button variant="outline" className="w-full">
                 Login with Google
-              </Button>
+              </Button> */}
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
+              {props.mode === "signin"
+                ? "Don't have an account?"
+                : "Already have an account?"}{" "}
+              <Link
+                href={props.mode === "signin" ? "/sign-up" : "/sign-in"}
+                className="underline underline-offset-4"
+              >
+                {props.mode === "signin" ? "Signup" : "Login"}
+              </Link>
             </div>
           </form>
         </CardContent>

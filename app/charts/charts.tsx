@@ -53,6 +53,7 @@ import { toast } from "sonner";
 import { addNewEntry } from "./actions";
 import { Transaction } from "@/lib/db/schema";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth/session";
 
 const chartConfig = {
   visitors: {
@@ -73,7 +74,6 @@ interface ComponentProps {
 }
 
 export function Component({ chartData }: ComponentProps) {
-  console.log("chartData", chartData);
   const router = useRouter();
   const [timeRange, setTimeRange] = React.useState("90d");
   const [open, setOpen] = React.useState(false);
@@ -102,9 +102,6 @@ export function Component({ chartData }: ComponentProps) {
     },
   });
 
-  console.log("data", form.watch());
-  console.log("errors", form.formState.errors);
-
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const payload = {
       date: format(data.date, "yyyy-MM-dd"),
@@ -120,19 +117,32 @@ export function Component({ chartData }: ComponentProps) {
     toast("Entry added!");
   }
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date("2024-06-30");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
-    }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+  const referenceDate = new Date();
+  let daysToSubtract = 90;
+  if (timeRange === "30d") {
+    daysToSubtract = 30;
+  } else if (timeRange === "7d") {
+    daysToSubtract = 7;
+  }
+
+  const startDate = new Date(referenceDate);
+  startDate.setDate(startDate.getDate() - daysToSubtract);
+
+  const filteredData = chartData
+    .filter((item) => {
+      const date = new Date(item.date);
+      return date >= startDate;
+    })
+    .map((item) => ({
+      ...item,
+      date: new Date(item.date).getTime(), // convert to numeric timestamp
+    }));
+
+  async function handleSignOut() {
+    await signOut();
+    router.refresh();
+    router.push("/sign-in");
+  }
 
   return (
     <div>
@@ -255,6 +265,11 @@ export function Component({ chartData }: ComponentProps) {
             </Form>
           </DialogContent>
         </Dialog>
+        <form action={handleSignOut}>
+          <Button variant="destructive" type="submit">
+            Sign Out
+          </Button>
+        </form>
       </div>
       <Card>
         <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
@@ -319,27 +334,33 @@ export function Component({ chartData }: ComponentProps) {
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="date"
+                type="number"
+                domain={["dataMin", "dataMax"]}
+                scale="time"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 minTickGap={32}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
+                tickFormatter={(value) =>
+                  new Date(value).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
-                  });
-                }}
+                  })
+                }
               />
               <ChartTooltip
                 cursor={false}
                 content={
                   <ChartTooltipContent
                     labelFormatter={(value) => {
-                      return new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      });
+                      console.log("value", value);
+                      return new Date(Number(value)).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                        }
+                      );
                     }}
                     indicator="dot"
                   />
