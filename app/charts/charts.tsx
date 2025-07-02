@@ -143,7 +143,6 @@ export function Component({ chartData }: ComponentProps) {
     router.refresh();
     router.push("/sign-in");
   }
-
   return (
     <div>
       <div className="flex justify-end mb-3">
@@ -352,9 +351,8 @@ export function Component({ chartData }: ComponentProps) {
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    labelFormatter={(value) => {
-                      console.log("value", value);
-                      return new Date(Number(value)).toLocaleDateString(
+                    labelFormatter={(value, payload) => {
+                      return new Date(Number(payload[0]?.payload.date)).toLocaleDateString(
                         "en-US",
                         {
                           month: "short",
@@ -378,7 +376,7 @@ export function Component({ chartData }: ComponentProps) {
                 type="natural"
                 fill="url(#fillDesktop)"
                 stroke="var(--color-desktop)"
-                stackId="a"
+                stackId="b"
               />
               <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
