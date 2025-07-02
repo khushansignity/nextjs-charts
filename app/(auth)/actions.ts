@@ -45,6 +45,14 @@ export const signIn = validatedAction(signInSchema, async (data) => {
         };
     }
 
+    if (user.role !== "owner") {
+        return {
+            error: 'You are not authorized to access this page.',
+            email,
+            password
+        }
+    }
+
     await setSession(user)
 
     // const redirectTo = formData.get('redirect') as string | null;
@@ -87,7 +95,7 @@ export const signUp = validatedAction(signUpSchema, async (data) => {
     const newUser: NewUser = {
         email,
         passwordHash,
-        role: 'owner',
+        role: 'user',
     };
 
     const [createdUser] = await db.insert(auth_users).values(newUser).returning();

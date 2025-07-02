@@ -121,6 +121,8 @@ export function Component({ chartData }: ComponentProps) {
   let daysToSubtract = 90;
   if (timeRange === "30d") {
     daysToSubtract = 30;
+  } else if (timeRange === "360d") {
+    daysToSubtract = 360;
   } else if (timeRange === "7d") {
     daysToSubtract = 7;
   }
@@ -286,6 +288,9 @@ export function Component({ chartData }: ComponentProps) {
               <SelectValue placeholder="Last 3 months" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
+              <SelectItem value="360d" className="rounded-lg">
+                Last year
+              </SelectItem>
               <SelectItem value="90d" className="rounded-lg">
                 Last 3 months
               </SelectItem>
