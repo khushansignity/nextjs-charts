@@ -118,17 +118,27 @@ export function Component({ chartData }: ComponentProps) {
   }
 
   const referenceDate = new Date();
-  let daysToSubtract = 90;
-  if (timeRange === "30d") {
-    daysToSubtract = 30;
-  } else if (timeRange === "360d") {
-    daysToSubtract = 360;
-  } else if (timeRange === "7d") {
-    daysToSubtract = 7;
-  }
-
   const startDate = new Date(referenceDate);
-  startDate.setDate(startDate.getDate() - daysToSubtract);
+
+  switch (timeRange) {
+    case "7d":
+      startDate.setDate(startDate.getDate() - 7);
+      break;
+    case "30d":
+      startDate.setDate(startDate.getDate() - 30);
+      break;
+    case "90d":
+      startDate.setDate(startDate.getDate() - 90);
+      break;
+    case "360d":
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      break;
+    case "5y":
+      startDate.setFullYear(startDate.getFullYear() - 5);
+      break;
+    default:
+      startDate.setDate(startDate.getDate() - 90);
+  }
 
   const filteredData = chartData
     .filter((item) => {
@@ -288,6 +298,9 @@ export function Component({ chartData }: ComponentProps) {
               <SelectValue placeholder="Last 3 months" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
+              <SelectItem value="5y" className="rounded-lg">
+                Last 5 years
+              </SelectItem>
               <SelectItem value="360d" className="rounded-lg">
                 Last year
               </SelectItem>
